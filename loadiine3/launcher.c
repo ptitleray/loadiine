@@ -5,17 +5,17 @@
 #include "../../libwiiu/src/vpad.h"
 #include "../../libwiiu/src/socket.h"
 
-#if VER == 532
+#if VER == 410
     // Function definitions
-    #define SYSLaunchMiiStudio ((void (*)(void))0xDEAAEB8)
-    #define _Exit ((void (*)(void))0x0101cd70)
-    #define OSEffectiveToPhysical ((void* (*)(const void*))0x0101f510)
-    #define memcpy ((void * (*)(void * dest, const void * src, int num))0x1035a6c)
-    #define DCFlushRange ((void (*)(const void *addr, uint length))0x1023ee8)
-    #define ICInvalidateRange ((void (*)(const void *addr, uint length))0x1024010)
+    #define SYSLaunchMiiStudio ((void (*)(void))0x0DEAB888)
+    #define _Exit ((void (*)(void))0x0101C540)
+    #define OSEffectiveToPhysical ((void* (*)(const void*))0x0101C76C)
+    #define memcpy ((void * (*)(void * dest, const void * src, int num))0x01030EE4)
+    #define DCFlushRange ((void (*)(const void *addr, uint length))0x01020EAC)
+    #define ICInvalidateRange ((void (*)(const void *addr, uint length))0x01020FD4)
 
     // Install addresses
-    #define INSTALL_FS_ADDR             0x011df800  // where the fs functions are copied in memory
+    #define INSTALL_FS_ADDR             0x011DC000  // where the fs functions are copied in memory
 
     // Install flags
     #define INSTALL_FS_DONE_ADDR        (INSTALL_FS_ADDR - 0x4) // Used to know if fs is already installed
@@ -342,7 +342,7 @@ static int show_ip_selection_screen(unsigned int coreinit_handle, unsigned int *
             result = 1;
             break;
         }
-        // A Button
+        // X Button
         if (vpad_data.btn_trigger & BUTTON_X){
             *ip_address = ip.full;
             result = 1;
@@ -417,8 +417,10 @@ static int curl_download_file(private_data_t *private_data, void * curl, char *u
 
     /* Download file */
     int ret = private_data->curl_easy_perform(curl);
-    if(ret)
-        OSFatal(url);
+	if(ret) {
+		_Exit();
+		OSFatal(url);
+	}
 
     /* Do error checks */
     if(!file.len) {
@@ -486,11 +488,11 @@ static void curl_thread_callback(int argc, void *argv)
     while(*ptr != 0x2F)
         ptr--;
 
-    memcpy(ptr+1, "fs532.elf", 10);
+    memcpy(ptr+1, "fs410.elf", 10);
     private_data->len_fs  = curl_download_file(private_data, curl, buf, &private_data->data_fs);
-    memcpy(ptr+1, "menu532.elf", 12);
+    memcpy(ptr+1, "menu410.elf", 12);
     private_data->len_menu  = curl_download_file(private_data, curl, buf, &private_data->data_menu);
-    memcpy(ptr+1, "loader532.elf", 14);
+    memcpy(ptr+1, "loader410.elf", 14);
     private_data->len_loader  = curl_download_file(private_data, curl, buf, &private_data->data_loader);
 
     /* Cleanup to gain back memory */
@@ -503,8 +505,8 @@ static void curl_thread_callback(int argc, void *argv)
     //OSDynLoad_FindExport(private_data->coreinit_handle, 0, "OSDynLoad_Release", &OSDynLoad_Release);
     //OSDynLoad_Release(libcurl_handle);
 
-    /* Pre-load the Mii Studio to be executed on _Exit - thanks to wj444 for sharing it */
-    SYSLaunchMiiStudio();
+	/* Pre-load the Mii Studio to be executed on _Exit - thanks to wj444 for sharing it */
+	SYSLaunchMiiStudio();
 }
 
 static int strcmp(const char *s1, const char *s2)
@@ -581,10 +583,11 @@ static void InstallMenu(private_data_t *private_data)
     DCFlushRange((void*)(0xC1000000 + menu_rodata_addr), menu_rodata_len);
 
     /* Patch coreinit - on 5.3.2 coreinit.rpl starts at 0x101c400 */
-    int jump_length = menu_text_addr - 0x0101c55c;                       // => jump to (101C55C + 1C0AA4) = 11DD000 which is the codehandler
-    *((volatile uint32_t *)(0xC1000000 + 0x0101c55c)) = 0x48000001 | jump_length;    // 0x481c0aa5 => bl 0x1C0AA4  => write at 0x15C in coreinit file => end of the coreinit_start function
-    DCFlushRange((void*)(0xC1000000 + 0x0101c55c), 4);
-    ICInvalidateRange((void*)(0xC1000000 + 0x0101c55c), 4);
+    /* Patch coreinit - on 4.1.0 coreinit.rpl starts at 0x101BC00 */
+    int jump_length = menu_text_addr - 0x0101BD4C;                       // => jump to (101C55C + 1C0AA4) = 11DD000 which is the codehandler
+    *((volatile uint32_t *)(0xC1000000 + 0x0101BD4C)) = 0x48000001 | jump_length;    // 0x481c0aa5 => bl 0x1C0AA4  => write at 0x15C in coreinit file => end of the coreinit_start function
+    DCFlushRange((void*)(0xC1000000 + 0x0101BD4C), 4);
+    ICInvalidateRange((void*)(0xC1000000 + 0x0101BD4C), 4);
 }
 
 /* ****************************************************************** */
@@ -605,12 +608,12 @@ static void InstallLoader(private_data_t *private_data)
     unsigned char *loader_magic = private_data->data_loader + section_offset;
 
     /* Patch to bypass SDK version tests */
-    *((volatile uint32_t *)(0xC1000000 + 0x010095b4)) = 0x480000a0; // ble loc_1009654    (0x408100a0) => b loc_1009654      (0x480000a0)
-    *((volatile uint32_t *)(0xC1000000 + 0x01009658)) = 0x480000e8; // bge loc_1009740    (0x408100a0) => b loc_1009740      (0x480000e8)
-    DCFlushRange((void*)(0xC1000000 + 0x010095b4), 4);
-    ICInvalidateRange((void*)(0xC1000000 + 0x010095b4), 4);
-    DCFlushRange((void*)(0xC1000000 + 0x01009658), 4);
-    ICInvalidateRange((void*)(0xC1000000 + 0x01009658), 4);
+    *((volatile uint32_t *)(0xC1000000 + 0x01008DAC)) = 0x480000a0; // ble loc_1009654    (0x408100a0) => b loc_1009654      (0x480000a0)
+    *((volatile uint32_t *)(0xC1000000 + 0x01008E50)) = 0x480000e8; // bge loc_1009740    (0x408000e8) => b loc_1009740      (0x480000e8)
+    DCFlushRange((void*)(0xC1000000 + 0x01008DAC), 4);
+    ICInvalidateRange((void*)(0xC1000000 + 0x01008DAC), 4);
+    DCFlushRange((void*)(0xC1000000 + 0x01008E50), 4);
+    ICInvalidateRange((void*)(0xC1000000 + 0x01008E50), 4);
 
     /* Copy loader code in memory */
     /* - virtual address 0xA0000000 is at physical address 0x10000000 (with read/write access) */

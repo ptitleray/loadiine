@@ -58,7 +58,7 @@ typedef unsigned char (*OSExceptionCallback)(OSContext* interruptedContext);
 typedef uint8_t OSExceptionMode;
 typedef uint8_t OSExceptionType;
 
-extern OSExceptionCallback OSSetExceptionCallbackEx(OSExceptionMode exceptionMode, OSExceptionType exceptionType, OSExceptionCallback newCallback);
+extern OSExceptionCallback OSSetExceptionCallback(OSExceptionType exceptionType, OSExceptionCallback newCallback);
 extern void OSFatal(const char* msg);
 extern int __os_snprintf(char* s, int n, const char * format, ...);
 

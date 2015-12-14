@@ -44,7 +44,7 @@ OBJ := $(patsubst %.S,build/%.o,$(patsubst %.c,build/%.o,$(SRC)))
 BUILD_REQ := $(filter-out $(wildcard build),build)
 BIN_REQ := $(filter-out $(wildcard bin),bin)
 
-all: build/loader532.elf copy
+all: build/loader410.elf copy
 
 bin/loader%.h: build/loader%.text.bin build/loader%.magic.bin $(BIN_REQ)
 	xxd -i build/loader$*.magic.bin | sed "s/unsigned/static const unsigned/g;s/loader$*/loader/g;s/build_//g" > $@
@@ -70,7 +70,7 @@ build:
 	mkdir $@
 
 copy:
-	cp build/loader532.elf ../installer/bin/
+	cp build/loader410.elf ../loadiine3/bin/
 
 clean:
-	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../installer/loader532.h)
+	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../loadiine3/loader410.h)

@@ -959,7 +959,7 @@ DECL(int, OSDynLoad_GetModuleName, unsigned int *handle, char *name_buffer, int 
     return result;
 }
 
-DECL(int, OSDynLoad_IsModuleLoaded, char* rpl, unsigned int *handle, int r5 __attribute__((unused))) {
+/*DECL(int, OSDynLoad_IsModuleLoaded, char* rpl, unsigned int *handle, int r5 __attribute__((unused))) {
 
     int result = real_OSDynLoad_IsModuleLoaded(rpl, handle, 1);
     if ((int)bss_ptr != 0x0a000000)
@@ -970,7 +970,7 @@ DECL(int, OSDynLoad_IsModuleLoaded, char* rpl, unsigned int *handle, int r5 __at
     }
 
     return result;
-}
+}*/
 #endif
 
 /* *****************************************************************************
@@ -1111,7 +1111,7 @@ struct magic_t {
     MAKE_MAGIC(OSDynLoad_Acquire),
 #if (USE_EXTRA_LOG_FUNCTIONS == 1)
     MAKE_MAGIC(OSDynLoad_GetModuleName),
-    MAKE_MAGIC(OSDynLoad_IsModuleLoaded),
+/*    MAKE_MAGIC(OSDynLoad_IsModuleLoaded),*/
 #endif
 
     // Log functions

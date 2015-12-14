@@ -19,7 +19,7 @@
 #define LOADIINE_MODE_MII_MAKER     1
 
 /* DATA_ADDRESS : address where flags start */
-#define DATA_ADDR               ((void *)0x011e3800)
+#define DATA_ADDR               ((void *)0x011E0000) // TODO ???? 0x011e3800 for 532
 #define BOUNCE_FLAG_ADDR        (*(volatile unsigned int*)(DATA_ADDR - 0x04))      // bounce flag
 #define IS_ACTIVE_ADDR          (*(volatile unsigned int*)(DATA_ADDR - 0x08))      // is replacement active
 #define RPL_REPLACE_ADDR        (*(volatile unsigned int*)(DATA_ADDR - 0x0C))      // is it a new rpl to add
@@ -30,7 +30,7 @@
 
 /* RPX Address : where the rpx is copied or retrieve, depends if we dump or replace */
 /* Note : from phys 0x30789C5D to 0x31E20000, memory seems empty (space reserved for root.rpx) which let us approximatly 22.5mB of memory free to put the rpx and additional rpls */
-#define MEM_BASE                ((void*)0xC0800000)
+#define MEM_BASE                ((void*)0xC0800000) // TODO ????
 #define MEM_SIZE                (*(volatile unsigned int*)(MEM_BASE - 0x04))
 #define MEM_OFFSET              (*(volatile unsigned int*)(MEM_BASE - 0x08))
 #define MEM_AREA                (*(volatile unsigned int*)(MEM_BASE - 0x0C))
@@ -42,10 +42,10 @@
 
 /* RPX_RPL_ARRAY contains an array of multiple rpl/rpl structures: */
 /* Note : The first entry is always the one referencing the rpx (cf. struct s_rpx_rpl) */
-#define RPX_RPL_ARRAY           ((void*)0xC07A0000)
+#define RPX_RPL_ARRAY           ((void*)0xC07A0000) // TODO ????
 
 /* MEM_AREA_ARRAY contains empty memory areas address - linked */
-#define MEM_AREA_ARRAY          ((void*)0xC0790000)
+#define MEM_AREA_ARRAY          ((void*)0xC0790000) // TODO ????
 
 /* RPX Name : from which app/game, our rpx is launched */
 // 0xEFE00000 contains the rpx name, 0x63726F73 => cros (for smash brox : cross_f.rpx)
