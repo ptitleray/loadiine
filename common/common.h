@@ -19,7 +19,7 @@
 #define LOADIINE_MODE_MII_MAKER     1
 
 /* DATA_ADDRESS : address where flags start */
-#define DATA_ADDR               ((void *)0x011E0000) // TODO ???? 0x011e3800 for 532
+#define DATA_ADDR               ((void *)0x011E2400) // TODO ???? 0x011e3800 for 532
 #define BOUNCE_FLAG_ADDR        (*(volatile unsigned int*)(DATA_ADDR - 0x04))      // bounce flag
 #define IS_ACTIVE_ADDR          (*(volatile unsigned int*)(DATA_ADDR - 0x08))      // is replacement active
 #define RPL_REPLACE_ADDR        (*(volatile unsigned int*)(DATA_ADDR - 0x0C))      // is it a new rpl to add

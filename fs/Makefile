@@ -37,7 +37,7 @@ OBJ := $(patsubst %.S,%.o,$(patsubst %.c,%.o,$(SRC)))
 BUILD_REQ := $(filter-out $(wildcard build),build)
 BIN_REQ := $(filter-out $(wildcard bin),bin)
 
-all: build/fs410.elf copy
+all: build/fs500.elf copy
 
 ../installer/fs%.h: build/fs%.text.bin build/fs%.magic.bin $(BIN_REQ)
 	xxd -i build/fs$*.magic.bin | sed "s/unsigned/static const unsigned/g;s/fs$*/fs/g" > $@
@@ -62,7 +62,7 @@ build:
 	mkdir $@
 
 copy:
-	cp build/fs410.elf ../loadiine3/bin/
+	cp build/fs500.elf ../loadiine3/bin/
 
 clean:
-	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../loadiine3/fs410.h)
+	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../loadiine3/fs500.h)

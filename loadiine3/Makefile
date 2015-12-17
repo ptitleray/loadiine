@@ -10,7 +10,7 @@ build	:=	 $(root)/bin
 www_loadiine :=$(root)/../../www/loadiine3
 framework:=$(root)/../../../framework
 
-all: setup menu loader fs main410 print_stats
+all: setup menu loader fs main500 print_stats
 
 setup:
 	mkdir -p $(root)/bin/
@@ -24,12 +24,12 @@ loader:
 fs:
 	cd ../fs/ && make
 
-main410:
-	$(CC) $(CFLAGS) -DVER=410 $(project)/launcher.c
+main500:
+	$(CC) $(CFLAGS) -DVER=500 $(project)/launcher.c
 	#-Wa,-a,-ad
 	cp -r $(root)/*.o $(build)
 	rm $(root)/*.o
-	$(LD) $(LDFLAGS) -s -o $(build)/code410.bin $(build)/launcher.o `find $(build) -name "*.o" ! -name "launcher.o"`
+	$(LD) $(LDFLAGS) -s -o $(build)/code500.bin $(build)/launcher.o `find $(build) -name "*.o" ! -name "launcher.o"`
 	cp -rf $(build)/*.elf $(www_loadiine)
 	cp -rf $(build)/*.elf ../www/
 
@@ -41,6 +41,6 @@ clean:
 
 print_stats:
 	@echo
-	@echo "code size : menu   =>" `$(OBJDUMP) -h $(build)/menu410.elf | awk '/.text|rodata/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 5120
-	@echo "code size : loader =>" `$(OBJDUMP) -h $(build)/loader410.elf | awk '/.text/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 5120
-	@echo "code size : fs     =>" `$(OBJDUMP) -h $(build)/fs410.elf | awk '/.text|rodata|magic/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 16364
+	@echo "code size : menu   =>" `$(OBJDUMP) -h $(build)/menu500.elf | awk '/.text|rodata/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 5120
+	@echo "code size : loader =>" `$(OBJDUMP) -h $(build)/loader500.elf | awk '/.text/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 5120
+	@echo "code size : fs     =>" `$(OBJDUMP) -h $(build)/fs500.elf | awk '/.text|rodata|magic/ { sum+=strtonum("0x"$$3) } END {print sum}'` / 16364

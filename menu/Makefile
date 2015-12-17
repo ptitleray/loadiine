@@ -37,7 +37,7 @@ OBJ := $(patsubst %.S,build/%.o,$(patsubst %.c,build/%.o,$(SRC)))
 BUILD_REQ := $(filter-out $(wildcard build),build)
 BIN_REQ := $(filter-out $(wildcard bin),bin)
 
-all: build/menu410.elf copy
+all: build/menu500.elf copy
 
 bin/menu%.h: build/menu%.text.bin $(BIN_REQ)
 	xxd -i $< | sed "s/unsigned/static const unsigned/g;s/menu$*/menu/g;s/build_//g" > $@
@@ -59,8 +59,8 @@ build:
 	mkdir $@
 
 copy:
-	cp build/menu410.elf ../loadiine3/bin/
+	cp build/menu500.elf ../loadiine3/bin/
 
 clean:
-	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../loadiine3/menu410.h)
+	rm -rf $(wildcard build) $(wildcard bin) $(wildcard ../loadiine3/menu500.h)
 
