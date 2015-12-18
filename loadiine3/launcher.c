@@ -131,33 +131,6 @@ void _start()
         OSDynLoad_FindExport(coreinit_handle, 1, "MEMFreeToDefaultHeap", &functionPointer);
         private_data.MEMFreeToDefaultHeap = (void (*)(void *))*functionPointer;
 
-        /* Get functions to send restart signal */
-        int(*IM_Open)();
-        int(*IM_Close)(int fd);
-        int(*IM_SetDeviceState)(int fd, void *mem, int state, int a, int b);
-        void*(*OSAllocFromSystem)(unsigned int size, int align);
-        void(*OSFreeToSystem)(void *ptr);
-        OSDynLoad_FindExport(coreinit_handle, 0, "IM_Open", &IM_Open);
-        OSDynLoad_FindExport(coreinit_handle, 0, "IM_Close", &IM_Close);
-        OSDynLoad_FindExport(coreinit_handle, 0, "IM_SetDeviceState", &IM_SetDeviceState);
-        OSDynLoad_FindExport(coreinit_handle, 0, "OSAllocFromSystem", &OSAllocFromSystem);
-        OSDynLoad_FindExport(coreinit_handle, 0, "OSFreeToSystem", &OSFreeToSystem);
-
-        /* Send restart signal to get rid of uneeded threads */
-        /* Cause the other browser threads to exit */
-        int fd = IM_Open();
-        void *mem = OSAllocFromSystem(0x100, 64);
-        memset(mem, 0, 0x100);
-
-        /* Sets wanted flag */
-        IM_SetDeviceState(fd, mem, 3, 0, 0);
-        IM_Close(fd);
-        OSFreeToSystem(mem);
-
-        /* Waits for thread exits */
-        unsigned int t1 = 0x1FFFFFFF;
-        while(t1--) ;
-
         /* Prepare for thread startups */
         int (*OSCreateThread)(OSThread *thread, void *entry, int argc, void *args, unsigned int stack, unsigned int stack_size, int priority, unsigned short attr);
         int (*OSResumeThread)(OSThread *thread);
@@ -184,6 +157,33 @@ void _start()
 
         /* Schedule it for execution */
         OSResumeThread(thread);
+
+        /* Get functions to send restart signal */
+        int(*IM_Open)();
+        int(*IM_Close)(int fd);
+        int(*IM_SetDeviceState)(int fd, void *mem, int state, int a, int b);
+        void*(*OSAllocFromSystem)(unsigned int size, int align);
+        void(*OSFreeToSystem)(void *ptr);
+        OSDynLoad_FindExport(coreinit_handle, 0, "IM_Open", &IM_Open);
+        OSDynLoad_FindExport(coreinit_handle, 0, "IM_Close", &IM_Close);
+        OSDynLoad_FindExport(coreinit_handle, 0, "IM_SetDeviceState", &IM_SetDeviceState);
+        OSDynLoad_FindExport(coreinit_handle, 0, "OSAllocFromSystem", &OSAllocFromSystem);
+        OSDynLoad_FindExport(coreinit_handle, 0, "OSFreeToSystem", &OSFreeToSystem);
+
+        /* Send restart signal to get rid of uneeded threads */
+        /* Cause the other browser threads to exit */
+        int fd = IM_Open();
+        void *mem = OSAllocFromSystem(0x100, 64);
+        memset(mem, 0, 0x100);
+
+        /* Sets wanted flag */
+        IM_SetDeviceState(fd, mem, 3, 0, 0);
+        IM_Close(fd);
+        OSFreeToSystem(mem);
+
+        /* Waits for thread exits */
+        unsigned int t1 = 0x1FFFFFFF;
+        while(t1--) ;
 
         /* while we are downloading let the user select his IP stuff */
         unsigned int ip_address = 0;
