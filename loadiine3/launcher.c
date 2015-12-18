@@ -488,11 +488,11 @@ static void curl_thread_callback(int argc, void *argv)
     while(*ptr != 0x2F)
         ptr--;
 
-    memcpy(ptr+1, "fs410.elf", 10);
+    memcpy(ptr+1, "fs500.elf", 10);
     private_data->len_fs  = curl_download_file(private_data, curl, buf, &private_data->data_fs);
-    memcpy(ptr+1, "menu410.elf", 12);
+    memcpy(ptr+1, "menu500.elf", 12);
     private_data->len_menu  = curl_download_file(private_data, curl, buf, &private_data->data_menu);
-    memcpy(ptr+1, "loader410.elf", 14);
+    memcpy(ptr+1, "loader500.elf", 14);
     private_data->len_loader  = curl_download_file(private_data, curl, buf, &private_data->data_loader);
 
     /* Cleanup to gain back memory */
